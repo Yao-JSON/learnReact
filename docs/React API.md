@@ -133,10 +133,49 @@ Context传递的数据和Context.Provider组件的value属性是一样的。对P
 
 #### forwardRef
 
-`React.forwardRef`的用法是，接受一个函数作为参数。
-
 ```js
 React.forwardRef((props, ref) => React.ReactElement)
 ```
 
+`React.forwardRef`的用法是，接受一个函数作为参数。实际上，可以将这个函数视为一个函数组件，它的第一个参数和函数组件一样，不同在于，它多了一个 `ref`。这意味着如果你在 `React.forwardRef`创建的组件上使用`ref`的话，它并不能直接被组件给消化掉，而是组件内部进行了转发，让需要消化它的组件去消化。
+其实还可以换一种方式去理解，我们都知道`ref、key`等都是`react`的保留关键字，`ref`并不会出现在`props`中，它被特殊对待，换个名字不久可以了么？
+以前我们获取`ref`是传递一个函数（不推荐使用字符串，这是一个历史遗留的问题，`ref` 会在某些情况下无法获取到正确的值。vuejs可以使用，不要搞混了）。但是这个过程很烦的，我们只需要把实例或者DOM赋值给对应的变量就行了，每次都写一下这个一样模板的代码，很烦人的好吗。“千呼万唤”中，React终于听到了。现在只需要`React.createRef`就可以简化这个过程了。
 
+```jsx
+class MyComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.myRef = React.createRef();
+    }
+    render() {
+        return <div ref={this.myRef} />;
+    }
+}
+```
+
+回到上面的话题，现在我们用props来实现转发refs的功能。
+
+```jsx
+class Input extends React.Component {
+
+  reder() {
+    return (
+      <label>Autofocus Input:</label>
+      <input ref={this.props.forwardRef} type="text" />
+    )
+  }
+
+}
+
+function forwardRef(Component, ref) {
+  return (<Component forwardRef={ref} />);
+}
+
+// 使用forwardRef
+let input = React.createRef();
+
+forwardRef(Input, input);
+
+// 当组件绑定成功之后
+ input.current.focus();
+```
