@@ -179,3 +179,35 @@ forwardRef(Input, input);
 // 当组件绑定成功之后
  input.current.focus();
 ```
+
+`React.createRef`返回的值中，`current`属性表示的就是对应的DOM或者组件实例。`forwardRef`并没有什么特殊的含义，就是一个简单的props。这个用法就像是状态提升一样。
+
+#### StrictMode
+
+StrictMode 于 v16.3 推出。顾名思义，即严格模式，可用于在开发环境下提醒组件内使用不推荐写法和即将废弃的 API（该版本废弃了三个生命周期钩子）。与 Fragment 相同，并不会被渲染成真实 DOM。官方文档严格模式里详细介绍了会在哪些情况下发出警告。对于我们开发者来说，及时弃用不被推荐的写法即可规避这些警告。
+
+StrictMode是一个用以标记出应用中潜在问题的工具。就像Fragment，StrictMode不会渲染任何真实的UI。它为其后代元素触发额外的检查和警告。
+
+>注意: 严格模式检查只在开发模式下运行，不会与生产模式冲突。
+
+严格模式是一个新的方式来确保你的代码是按照最佳实践开发的。它实际是一个在React.StrictMode下的组件。它可以用在你的组件树的任何一部分上。
+
+```jsx
+import {StrictMode} from 'react'
+
+class Application extends React.Component {
+  render() {
+    return (
+      <StrictMode>
+        <Context.Provider value={{background: 'black', color: 'white'}}>
+          <Header />
+          <Main />
+          <Footer />
+        </Context.Provider>
+      </StrictMode>
+    );
+  }
+}
+```
+
+如果一个在StricMode子树里的组件使用了componentWillMount方法，那么你会看到一个报错消息。
